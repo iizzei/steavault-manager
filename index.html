@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SteamVault Manager — Organiza tu biblioteca de Steam</title>
+<meta name="description" content="Gestiona tu biblioteca de Steam, cromos y skins con filtros avanzados y control de valor. Gratis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e14;--bg2:#11161f;--card:#141b28;--text:#f0f4fa;--muted:#a0aec0;--blue:#1078F0;--violet:#7c3aed;--border:rgba(255,255,255,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+h1{font-size:clamp(2rem,5vw,3.2rem);line-height:1.15;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3vw,2rem);margin-bottom:12px}
+p{color:var(--muted);max-width:60ch}
+section{padding:80px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 28px;border-radius:10px;font-weight:600;font-size:1rem;cursor:pointer;border:none;transition:all .25s;text-decoration:none;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;box-shadow:0 4px 16px rgba(16,120,240,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(16,120,240,.4);color:#fff}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--bg2);color:var(--text)}
+.btn-lg{padding:16px 36px;font-size:1.1rem}
+.eyebrow{display:inline-block;font-size:.8rem;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,14,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header .container{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:1.15rem;color:var(--text);text-decoration:none}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;color:#fff}
+.nav{display:flex;align-items:center;gap:24px}
+.nav a{color:var(--muted);font-size:.9rem;text-decoration:none;transition:color .15s}
+.nav a:hover{color:var(--text)}
+.nav .btn{padding:8px 18px;font-size:.85rem}
+.menu-toggle{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+.hero{padding:calc(64px + 100px) 0 100px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-20%;width:80%;height:100%;background:radial-gradient(ellipse,rgba(16,120,240,.12) 0%,transparent 70%);pointer-events:none}
+.hero .container{position:relative;z-index:1}
+.hero h1{background:linear-gradient(180deg,#fff 0%,#a0aec0 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.hero p{font-size:1.15rem;margin:0 auto 32px;max-width:550px}
+.hero-ctas{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:32px}
+.trust-badges{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.trust-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:var(--bg2);border-radius:6px;border:1px solid var(--border)}
+.trust-badge svg{width:14px;height:14px;color:var(--blue)}
+.section-header{text-align:center;max-width:600px;margin:0 auto 48px}
+.section-header p{margin:0 auto}
+.problems-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:all .25s}
+.problem-card:hover{border-color:rgba(16,120,240,.4);transform:translateY(-3px)}
+.problem-icon{width:44px;height:44px;background:rgba(16,120,240,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--blue)}
+.problem-icon svg{width:22px;height:22px}
+.problem-card h3{font-size:1.05rem;margin-bottom:8px}
+.problem-card p{font-size:.9rem;margin:0}
+.benefits{background:var(--bg2)}
+.benefits-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.benefit-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:all .25s}
+.benefit-card:hover{border-color:rgba(16,120,240,.4);box-shadow:0 0 30px rgba(16,120,240,.1)}
+.benefit-icon{width:48px;height:48px;background:linear-gradient(135deg,rgba(16,120,240,.1),rgba(124,58,237,.1));border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:var(--blue)}
+.benefit-icon svg{width:24px;height:24px}
+.benefit-card h3{font-size:1.1rem;margin-bottom:8px}
+.benefit-card p{font-size:.9rem;margin-bottom:12px}
+.evidence{display:inline-block;font-size:.75rem;font-weight:600;color:var(--blue);background:rgba(16,120,240,.1);padding:3px 10px;border-radius:50px}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center}
+.step-num{width:44px;height:44px;background:linear-gradient(135deg,var(--blue),var(--violet));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;margin:0 auto 16px}
+.step-card h3{margin-bottom:8px}
+.step-card p{font-size:.9rem;margin:0}
+.demo{background:var(--bg2)}
+.demo-box{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.demo-bar{display:flex;gap:6px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.demo-bar span{width:10px;height:10px;border-radius:50%}
+.demo-bar span:nth-child(1){background:#ff5f57}.demo-bar span:nth-child(2){background:#febc2e}.demo-bar span:nth-child(3){background:#28c840}
+.demo-body{padding:24px}
+.demo-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.demo-stat-item{background:var(--bg2);border-radius:10px;padding:16px;text-align:center}
+.demo-stat-val{font-size:1.6rem;font-weight:700;color:var(--blue)}
+.demo-stat-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+.demo-table{background:var(--bg2);border-radius:10px;overflow:hidden}
+.demo-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:10px 16px;font-size:.85rem;border-bottom:1px solid var(--border)}
+.demo-row:last-child{border-bottom:none}
+.demo-row.header{font-size:.7rem;font-weight:600;color:var(--muted);text-transform:uppercase}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.tag-green{background:rgba(34,197,94,.15);color:#22c55e}
+.tag-yellow{background:rgba(234,179,8,.15);color:#eab308}
+.tag-blue{background:rgba(16,120,240,.15);color:var(--blue)}
+.comparison{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.comparison-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:12px 20px;font-size:.9rem;border-bottom:1px solid var(--border)}
+.comparison-row:last-child{border-bottom:none}
+.comparison-row.header{font-weight:600;font-size:.85rem;background:var(--bg2)}
+.comparison-row.header>div:nth-child(2){color:var(--blue)}
+.check{color:#22c55e}.cross{color:#ef4444}
+.testimonials-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.testimonial-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px}
+.stars{color:#fbbf24;margin-bottom:12px}
+.testimonial-text{font-size:.9rem;font-style:italic;margin-bottom:16px}
+.author{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--violet));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.8rem}
+.author-name{font-weight:600;font-size:.85rem}
+.author-detail{font-size:.75rem;color:var(--muted)}
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.risk-item{text-align:center;padding:20px}
+.risk-icon{width:48px;height:48px;background:rgba(16,120,240,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--blue)}
+.risk-icon svg{width:22px;height:22px}
+.risk-item h4{font-size:.95rem;margin-bottom:4px}
+.risk-item p{font-size:.8rem;margin:0}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:750px;margin:0 auto}
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative;transition:all .25s}
+.pricing-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.pricing-card.featured{border-color:var(--blue);box-shadow:0 0 30px rgba(16,120,240,.1)}
+.pricing-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;font-size:.7rem;font-weight:700;padding:3px 12px;border-radius:50px;text-transform:uppercase}
+.pricing-name{font-size:1rem;font-weight:600;margin-bottom:8px}
+.price{font-size:2.5rem;font-weight:800;margin-bottom:20px}
+.price span{font-size:1rem;color:var(--muted);font-weight:400}
+.pricing-features{list-style:none;margin-bottom:24px}
+.pricing-features li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.9rem;color:var(--muted)}
+.pricing-features li svg{width:16px;height:16px;color:var(--blue);flex-shrink:0}
+.pricing-card .btn{width:100%}
+.faq{background:var(--bg2)}
+.faq-list{max-width:700px;margin:0 auto}
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;background:none;border:none;color:var(--text);font-size:.95rem;font-weight:600;font-family:inherit;text-align:left;cursor:pointer;transition:color .15s}
+.faq-q:hover{color:var(--blue)}
+.faq-q:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.faq-icon{width:20px;height:20px;flex-shrink:0;transition:transform .25s;color:var(--muted)}
+.faq-item.active .faq-icon{transform:rotate(45deg);color:var(--blue)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.faq-item.active .faq-a{max-height:250px}
+.faq-a-content{padding:0 20px 18px;color:var(--muted);font-size:.9rem;line-height:1.7}
+.cta-final{text-align:center;position:relative;overflow:hidden}
+.cta-final::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse,rgba(16,120,240,.1) 0%,transparent 70%);pointer-events:none}
+.cta-final .container{position:relative;z-index:1}
+.cta-final p{margin:0 auto 32px;max-width:450px}
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:48px 0 24px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px}
+.footer-brand p{font-size:.85rem;max-width:280px;margin-top:12px}
+.footer-col h4{font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:12px}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:8px}
+.footer-col a{color:var(--muted);font-size:.85rem;text-decoration:none;transition:color .15s}
+.footer-col a:hover{color:var(--blue)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:20px;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.footer-legal{display:flex;gap:20px}
+.footer-legal a{color:var(--muted);font-size:.8rem;text-decoration:none}
+.footer-legal a:hover{color:var(--muted)}
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+@media(max-width:768px){
+  .nav{display:none}
+  .menu-toggle{display:block}
+  .nav.mobile-open{display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;background:var(--bg2);padding:24px;border-bottom:1px solid var(--border);gap:16px}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .demo-stats{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .footer-grid{grid-template-columns:1fr}
+  section{padding:60px 0}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <a href="/" class="logo"><span class="logo-icon">SV</span>SteamVault</a>
+    <nav class="nav" id="nav">
+      <a href="#caracteristicas">Características</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#precios">Precios</a>
+      <a href="#faq">FAQ</a>
+      <a href="/auth/steam" class="btn btn-primary" id="navLogin">Sincronizar gratis</a>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Menú">☰</button>
+  </div>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">Conexión segura con Steam</span>
+    <h1>Toma el control absoluto de tu cuenta de Steam</h1>
+    <p>Organiza miles de juegos e inventarios en segundos con herramientas profesionales que la aplicación oficial no te da.</p>
+    <div class="hero-ctas">
+      <a href="/auth/steam" class="btn btn-primary btn-lg" id="heroLogin">Sincronizar con Steam Gratis</a>
+      <a href="#como-funciona" class="btn btn-secondary btn-lg">Ver cómo funciona</a>
+    </div>
+    <div class="trust-badges">
+      <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>No pedimos contraseñas</span>
+      <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>API oficial de Valve</span>
+      <span class="trust-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Configuración en 2 minutos</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMAS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">¿Te sientes identificado?</span>
+      <h2>Tu biblioteca de Steam es un caos</h2>
+      <p>Si tienes una biblioteca grande, estos problemas te resultan familiares.</p>
+    </div>
+    <div class="problems-grid">
+      <div class="problem-card fade-in">
+        <div class="problem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>No encuentras a qué jugar</h3>
+        <p>Con cientos de juegos, pasas más tiempo buscando qué jugar que jugando.</p>
+      </div>
+      <div class="problem-card fade-in">
+        <div class="problem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <h3>Filtros limitados</h3>
+        <p>Steam solo permite filtros básicos. Sin vistas personalizadas ni organización avanzada.</p>
+      </div>
+      <div class="problem-card fade-in">
+        <div class="problem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+        <h3>Inventario desordenado</h3>
+        <p>No sabes cuánto valor tienen tus cromos ni qué items tienes duplicados.</p>
+      </div>
+      <div class="problem-card fade-in">
+        <div class="problem-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <h3>Búsquedas lentas</h3>
+        <p>Encontrar un juego o item específico en Steam es frustrante y lento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUCIÓN -->
+<section id="caracteristicas" style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">La solución</span>
+      <h2>SteamVault Manager: tu biblioteca, bajo control</h2>
+      <p>Herramientas profesionales de organización, búsqueda y gestión de inventario conectadas a tu cuenta de Steam.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        <h3>Organización Masiva Inteligente</h3>
+        <p>Clasifica tu biblioteca por tiempo de juego, fecha de compra, tags o estado del backlog con un clic.</p>
+        <span class="evidence">Ahora horas de organización</span>
+      </div>
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>Búsqueda Ultra-Rápida</h3>
+        <p>Encuentra cualquier juego o skin en milisegundos con filtros combinados.</p>
+        <span class="evidence">Búsqueda en menos de 100ms</span>
+      </div>
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>Control de Valor de Inventario</h3>
+        <p>Visualiza el valor total de tus cromos y skins en tiempo real.</p>
+        <span class="evidence">Seguimiento de precios actualizado</span>
+      </div>
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <h3>Tags Personalizados</h3>
+        <p>Crea tu propio sistema de etiquetas sin límites.</p>
+        <span class="evidence">Categorización sin límites</span>
+      </div>
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+        <h3>Sincronización en Tiempo Real</h3>
+        <p>Tu biblioteca siempre actualizada sin refrescar.</p>
+        <span class="evidence">Datos siempre al día</span>
+      </div>
+      <div class="benefit-card fade-in">
+        <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h3>Dashboard Unificado</h3>
+        <p>Toda la información importante desde un único panel.</p>
+        <span class="evidence">Todo visible de un vistazo</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Cómo funciona</span>
+      <h2>Empieza en 3 pasos</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-in">
+        <div class="step-num">1</div>
+        <h3>Conecta tu cuenta</h3>
+        <p>Login oficial de Valve. No necesitas dar tu contraseña.</p>
+      </div>
+      <div class="step-card fade-in">
+        <div class="step-num">2</div>
+        <h3>Sincronización automática</h3>
+        <p>Importamos tu biblioteca en menos de 2 minutos.</p>
+      </div>
+      <div class="step-card fade-in">
+        <div class="step-num">3</div>
+        <h3>Organiza y disfruta</h3>
+        <p>Filtros, tags y control total de tu biblioteca.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="demo">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Demo</span>
+      <h2>Así se ve tu biblioteca organizada</h2>
+    </div>
+    <div class="demo-box fade-in">
+      <div class="demo-bar"><span></span><span></span><span></span></div>
+      <div class="demo-body">
+        <div class="demo-stats">
+          <div class="demo-stat-item"><div class="demo-stat-val">1,247</div><div class="demo-stat-label">Juegos</div></div>
+          <div class="demo-stat-item"><div class="demo-stat-val">€342</div><div class="demo-stat-label">Valor inventario</div></div>
+          <div class="demo-stat-item"><div class="demo-stat-val">89</div><div class="demo-stat-label">Pendientes</div></div>
+        </div>
+        <div class="demo-table">
+          <div class="demo-row header"><div>Juego</div><div>Horas</div><div>Estado</div><div>Valor</div></div>
+          <div class="demo-row"><div>Elden Ring</div><div>142h</div><div><span class="tag tag-green">Completado</span></div><div>—</div></div>
+          <div class="demo-row"><div>Baldur's Gate 3</div><div>87h</div><div><span class="tag tag-blue">Jugando</span></div><div>—</div></div>
+          <div class="demo-row"><div>Cyberpunk 2077</div><div>0h</div><div><span class="tag tag-yellow">Backlog</span></div><div>—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFERENCIACIÓN -->
+<section style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Diferenciación</span>
+      <h2>Por qué SteamVault Manager</h2>
+    </div>
+    <div class="comparison fade-in">
+      <div class="comparison-row header"><div>Característica</div><div>SteamVault</div><div>Cliente Steam</div></div>
+      <div class="comparison-row"><div>Filtros combinables</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Tags personalizados</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Valor de inventario</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Detección de duplicados</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Limpieza de backlog</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Búsqueda instantánea</div><div class="check">✓</div><div class="cross">✗</div></div>
+      <div class="comparison-row"><div>Estadísticas de juego</div><div class="check">✓</div><div class="check">✓</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRUEBA SOCIAL -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Prueba social</span>
+      <h2>Lo que dicen nuestros usuarios</h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-in">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Por fin sé qué tengo. Tengo más de 800 juegos y SteamVault me ayudó a organizar todo en una tarde."</p>
+        <div class="author"><div class="avatar">MR</div><div><div class="author-name">[NOMBRE DE USUARIO]</div><div class="author-detail">847 juegos · [TESTIMONIO REAL PENDIENTE]</div></div></div>
+      </div>
+      <div class="testimonial-card fade-in">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"Tenía skins que no sabía que valían lo que valen. Ahora gestiono todo desde un solo panel."</p>
+        <div class="author"><div class="avatar">LC</div><div><div class="author-name">[NOMBRE DE USUARIO]</div><div class="author-detail">Coleccionista · [TESTIMONIO REAL PENDIENTE]</div></div></div>
+      </div>
+      <div class="testimonial-card fade-in">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">"La búsqueda instantánea me ahorra minutos cada día. Algo que Steam debería tener."</p>
+        <div class="author"><div class="avatar">AP</div><div><div class="author-name">[NOMBRE DE USUARIO]</div><div class="author-detail">312 juegos · [TESTIMONIO REAL PENDIENTE]</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REDUCCIÓN DE RIESGO -->
+<section style="background:var(--bg2)">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Sin riesgo</span>
+      <h2>Empieza sin compromiso</h2>
+    </div>
+    <div class="risk-grid">
+      <div class="risk-item fade-in">
+        <div class="risk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h4>Conexión segura</h4>
+        <p>OAuth oficial de Steam. Nunca almacenamos tu contraseña.</p>
+      </div>
+      <div class="risk-item fade-in">
+        <div class="risk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <h4>Plan gratuito</h4>
+        <p>Funciones básicas gratis. Paga solo si necesitas Pro.</p>
+      </div>
+      <div class="risk-item fade-in">
+        <div class="risk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <h4>Configuración rápida</h4>
+        <p>En 2 minutos estás listo. Sin instalaciones.</p>
+      </div>
+      <div class="risk-item fade-in">
+        <div class="risk-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+        <h4>Cancela cuando quieras</h4>
+        <p>Sin permanencia. Cancela en cualquier momento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="precios">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">Precios</span>
+      <h2>Elige tu plan</h2>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card fade-in">
+        <h3 class="pricing-name">Básico</h3>
+        <div class="price">0€<span>/mes</span></div>
+        <ul class="pricing-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Sincronización de biblioteca</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Filtros básicos</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Tags (hasta 10)</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dashboard estándar</li>
+        </ul>
+        <a href="/auth/steam" class="btn btn-secondary">Empezar gratis</a>
+      </div>
+      <div class="pricing-card featured fade-in">
+        <span class="pricing-badge">Más popular</span>
+        <h3 class="pricing-name">Pro</h3>
+        <div class="price">3,99€<span>/mes</span></div>
+        <ul class="pricing-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Todo lo del Básico</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Filtros ilimitados</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Tags ilimitados</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Valor de inventario</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Detección de duplicados</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Limpieza de backlog</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Soporte prioritario</li>
+        </ul>
+        <a href="/auth/steam" class="btn btn-primary">Prueba Pro gratis</a>
+        <p style="text-align:center;margin-top:8px;font-size:.75rem;color:var(--muted)">29€/año · Ahorra 20€</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">FAQ</span>
+      <h2>Preguntas frecuentes</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿SteamVault Manager es gratuito?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">Sí, las funciones básicas son gratuitas. El plan Pro (3,99€/mes o 29€/año) desbloquea gestión masiva avanzada y análisis de inventario.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿Necesito dar mi contraseña de Steam?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">No. Utilizamos exclusivamente el sistema oficial de autenticación OAuth de Steam. Nunca solicitamos ni almacenamos tu contraseña. La conexión se realiza directamente con los servidores de Valve.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿Qué necesito para empezar?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">Solo necesitas una cuenta de Steam. Al conectar mediante OAuth, sincronizamos tu biblioteca automáticamente. No necesitas instalar nada.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿Cuánto tarda la sincronización?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">Normalmente menos de 2 minutos. Las actualizaciones posteriores son automáticas y casi instantáneas.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿Puedo cancelar cuando quiera?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">Sí, no hay permanencia. Puedes cancelar tu suscripción Pro en cualquier momento desde tu panel de control.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false">¿Mis datos están seguros?<svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+        <div class="faq-a"><div class="faq-a-content">Sí. Utilizamos encriptación de extremo a extremo y nunca almacenamos credenciales de Steam. Puedes solicitar la eliminación de tus datos en cualquier momento.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final" id="empezar">
+  <div class="container">
+    <h2>¿Listo para tomar el control de tu biblioteca?</h2>
+    <p>Conecta tu cuenta de Steam en 2 minutos. Sin contraseñas, sin riesgo, gratis.</p>
+    <a href="/auth/steam" class="btn btn-primary btn-lg" id="finalLogin">Sincronizar con Steam Gratis</a>
+    <p style="margin-top:16px;font-size:.8rem">No pedimos contraseñas · API oficial de Valve · Cancela cuando quieras</p>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo"><span class="logo-icon">SV</span>SteamVault</a>
+        <p>Organiza tu biblioteca de Steam con herramientas profesionales.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Producto</h4>
+        <ul>
+          <li><a href="#caracteristicas">Características</a></li>
+          <li><a href="#precios">Precios</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#privacidad">Privacidad</a></li>
+          <li><a href="#terminos">Términos</a></li>
+          <li><a href="#cookies">Cookies</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="mailto:[EMAIL DE CONTACTO]">[EMAIL DE CONTACTO]</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 SteamVault Manager</span>
+      <div class="footer-legal">
+        <a href="#privacidad">Privacidad</a>
+        <a href="#terminos">Términos</a>
+        <a href="#cookies">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Header scroll
+const header=document.querySelector('.header');
+window.addEventListener('scroll',()=>{header.style.background=window.scrollY>10?'rgba(10,14,20,.95)':'rgba(10,14,20,.85)'},{passive:true});
+
+// Mobile menu
+const toggle=document.getElementById('menuToggle');
+const nav=document.getElementById('nav');
+toggle.addEventListener('click',()=>{nav.classList.toggle('mobile-open')});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('mobile-open')));
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const item=btn.parentElement;
+    const active=item.classList.contains('active');
+    document.querySelectorAll('.faq-item').forEach(i=>{i.classList.remove('active');i.querySelector('.faq-q').setAttribute('aria-expanded','false')});
+    if(!active){item.classList.add('active');btn.setAttribute('aria-expanded','true')}
+  });
+});
+
+// Fade-in on scroll
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{
+  const t=document.querySelector(a.getAttribute('href'));
+  if(t){e.preventDefault();window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-80,behavior:'smooth'})}
+}));
+
+// Estado de autenticación
+async function checkAuth(){
+  try{
+    const res=await fetch('/api/me');
+    const data=await res.json();
+    if(data.authenticated&&data.user){
+      document.querySelectorAll('#navLogin,#heroLogin,#finalLogin').forEach(btn=>{
+        btn.textContent='✓ '+data.user.name;
+        btn.href='/auth/logout';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-secondary');
+      });
+      const url=new URL(window.location);
+      if(url.searchParams.get('login')==='success'){
+        history.replaceState({},'',url.pathname);
+      }
+    }
+  }catch(e){/* sin conexión al servidor */}
+}
+checkAuth();
+</script>
+
+</body>
+</html>
