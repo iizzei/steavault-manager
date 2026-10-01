@@ -168,7 +168,7 @@ section{padding:80px 0}
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#precios">Precios</a>
       <a href="#faq">FAQ</a>
-      <a href="/auth/steam" class="btn btn-primary" id="navLogin">Sincronizar gratis</a>
+      <a href="/api/auth/steam" class="btn btn-primary" id="navLogin">Sincronizar gratis</a>
     </nav>
     <button class="menu-toggle" id="menuToggle" aria-label="Menú">☰</button>
   </div>
@@ -183,7 +183,7 @@ section{padding:80px 0}
     <h1>Toma el control absoluto de tu cuenta de Steam</h1>
     <p>Organiza miles de juegos e inventarios en segundos con herramientas profesionales que la aplicación oficial no te da.</p>
     <div class="hero-ctas">
-      <a href="/auth/steam" class="btn btn-primary btn-lg" id="heroLogin">Sincronizar con Steam Gratis</a>
+      <a href="/api/auth/steam" class="btn btn-primary btn-lg" id="heroLogin">Sincronizar con Steam Gratis</a>
       <a href="#como-funciona" class="btn btn-secondary btn-lg">Ver cómo funciona</a>
     </div>
     <div class="trust-badges">
@@ -425,7 +425,7 @@ section{padding:80px 0}
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Tags (hasta 10)</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Dashboard estándar</li>
         </ul>
-        <a href="/auth/steam" class="btn btn-secondary">Empezar gratis</a>
+        <a href="/api/auth/steam" class="btn btn-secondary">Empezar gratis</a>
       </div>
       <div class="pricing-card featured fade-in">
         <span class="pricing-badge">Más popular</span>
@@ -440,7 +440,7 @@ section{padding:80px 0}
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Limpieza de backlog</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Soporte prioritario</li>
         </ul>
-        <a href="/auth/steam" class="btn btn-primary">Prueba Pro gratis</a>
+        <a href="/api/auth/steam" class="btn btn-primary">Prueba Pro gratis</a>
         <p style="text-align:center;margin-top:8px;font-size:.75rem;color:var(--muted)">29€/año · Ahorra 20€</p>
       </div>
     </div>
@@ -488,7 +488,7 @@ section{padding:80px 0}
   <div class="container">
     <h2>¿Listo para tomar el control de tu biblioteca?</h2>
     <p>Conecta tu cuenta de Steam en 2 minutos. Sin contraseñas, sin riesgo, gratis.</p>
-    <a href="/auth/steam" class="btn btn-primary btn-lg" id="finalLogin">Sincronizar con Steam Gratis</a>
+    <a href="/api/auth/steam" class="btn btn-primary btn-lg" id="finalLogin">Sincronizar con Steam Gratis</a>
     <p style="margin-top:16px;font-size:.8rem">No pedimos contraseñas · API oficial de Valve · Cancela cuando quieras</p>
   </div>
 </section>
@@ -576,7 +576,7 @@ async function checkAuth(){
     if(data.authenticated&&data.user){
       document.querySelectorAll('#navLogin,#heroLogin,#finalLogin').forEach(btn=>{
         btn.textContent='✓ '+data.user.name;
-        btn.href='/auth/logout';
+        btn.href='/api/auth/logout';
         btn.classList.remove('btn-primary');
         btn.classList.add('btn-secondary');
       });
